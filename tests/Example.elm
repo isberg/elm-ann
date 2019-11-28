@@ -26,4 +26,18 @@ suite =
                         |> Network.toString
                         |> Expect.equal "Network [0=1, 1=0, 2=0] [(0, 1)=-0.5]"
             ]
+        , describe "Network.activate"
+            [ test "activate without connections changes nothing" <|
+                \_ ->
+                    Network.create [(0, 1), (1, 0), (2, -0.5)] []
+                        |> Network.activate
+                        |> Network.toString
+                        |> Expect.equal "Network [0=1, 1=0, 2=-0.5] []"
+            , test "activate with connections calculates output" <|
+                \_ ->
+                    Network.create [(0, 1), (1, 0)] [(0, 1, 0.5)]
+                        |> Network.activate
+                        |> Network.toString
+                        |> Expect.equal "Network [0=1, 1=1] [(0, 1)=0.5]"
+            ]
         ]
