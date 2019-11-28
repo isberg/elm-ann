@@ -1,11 +1,13 @@
-module Network exposing (Network, create, activate, toString)
+module Network exposing (Network, create, activate, setValues, toString)
 
 {-| Basic module for creating and using Artificial Neural Networks (ANNs).
 
 @docs Network
 
-@docs create, activate, toString
+@docs create, setValues, activate, toString
 -}
+
+import Dict
 
 {-| Representing an Artificial Neural Network
     
@@ -20,6 +22,21 @@ type Network = Network (List (Int, Float)) (List (Int, Int, Float))
 create : (List (Int, Float)) -> (List (Int, Int, Float)) -> Network
 create nodes connections =
     Network nodes connections
+
+{-| setValues is used to set values of input nodes
+
+    someNetwork |> Network.setValues [(0, 1), (1, -0.5)]
+-}
+setValues : List (Int, Float) -> Network -> Network
+setValues newValues network =
+    let
+        (Network oldValues connections) = network
+        oldies =  Dict.fromList oldValues
+        newNodes = oldies 
+            |> Dict.union (Dict.intersect (Dict.fromList newValues) oldies)
+            |> Dict.toList
+    in
+    Network newNodes connections
 
 {-| activate updates the network node values using the Step function
 

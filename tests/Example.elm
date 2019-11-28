@@ -40,4 +40,15 @@ suite =
                         |> Network.toString
                         |> Expect.equal "Network [0=1, 1=1] [(0, 1)=0.5]"
             ]
+        , describe "Network.setValues"
+            [ test "sets all matching node value" <|
+                \_ ->
+                    let
+                        dc = 666
+                    in
+                    Network.create [(0, dc), (1, dc), (2, dc)] []
+                        |> Network.setValues [(0, 1), (1, -0.5)]
+                        |> Network.toString
+                        |> Expect.equal "Network [0=1, 1=-0.5, 2=666] []"
+            ]
         ]
