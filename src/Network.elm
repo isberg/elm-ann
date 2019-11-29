@@ -1,10 +1,10 @@
-module Network exposing (Network, create, activate, setValues, toString)
+module Network exposing (Network, create, activate, setValues, toString, toDot)
 
 {-| Basic module for creating and using Artificial Neural Networks (ANNs).
 
 @docs Network
 
-@docs create, setValues, activate, toString
+@docs create, setValues, activate, toString, toDot
 -}
 
 import Dict
@@ -92,3 +92,43 @@ toString network =
     ++ "] [" ++
     (connections |> List.map connection2string |> String.join ", ")
     ++ "]"
+
+{-| toDot create graph description
+see https://en.wikipedia.org/wiki/DOT_(graph_description_language)
+can be vizualised with https://rise4fun.com/agl
+or https://dreampuf.github.io/GraphvizOnline/
+or using ports with https://github.com/mdaines/viz.js/
+
+    Network.create [(0, 1), (1, 0)] [(0, 1, -0.5)]
+        |> Network.toDot
+        -- == 
+        digraph {
+            0 [label="0=1"]
+            1 [label="1=0"]
+            0 -- 1 [label="-0.5"]
+        }
+-}
+toDot : Network -> String
+toDot network = 
+    let
+        (Network nodes connections) = network
+        nodesAsDot = nodes |> List.map node2dot |> String.join "\n"
+        node2dot (id, value) =
+            let
+                sid = id |> String.fromInt
+                svalue = value |> String.fromFloat
+            in
+            sid ++ " [label=\"" ++ sid ++ "=" ++ svalue  ++ "\"]"  
+
+        connectionsAsDot = connections |> List.map connection2dot |> String.join "\n"
+        connection2dot (from, to, weight) = 
+            (from |> String.fromInt)
+            ++ " -- " ++
+            (to |> String.fromInt)
+            ++ " [label=\"" ++ (weight |> String.fromFloat) ++ "\"]"
+    in
+    "digraph {\n" ++ 
+    nodesAsDot
+    ++ "\n" ++
+    connectionsAsDot 
+    ++"\n}"

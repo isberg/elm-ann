@@ -51,4 +51,21 @@ suite =
                         |> Network.toString
                         |> Expect.equal "Network [0=1, 1=-0.5, 2=666] []"
             ]
+        , describe "Network.toDot"
+            [ test "describes empty graph" <|
+                \_ ->
+                    Network.create [] []
+                        |> Network.toDot
+                        |> Expect.equal "digraph {\n\n\n}"
+            , test "describes graph with nodes only" <|
+                \_ ->
+                    Network.create [(0, 1), (1, 0)] []
+                        |> Network.toDot
+                        |> Expect.equal """digraph {\n0 [label="0=1"]\n1 [label="1=0"]\n\n}"""
+            , test "describes graph with nodes and edges" <|
+                \_ ->
+                    Network.create [(1, 0)] [(1, 1, -0.5)]
+                        |> Network.toDot
+                        |> Expect.equal """digraph {\n1 [label="1=0"]\n1 -- 1 [label="-0.5"]\n}"""
+            ]
         ]
