@@ -3,7 +3,7 @@
     "name": "isberg/elm-ann",
     "summary": "Artifical Neural Network in Elm",
     "license": "MIT",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "exposed-modules": [
         "Network"
     ],

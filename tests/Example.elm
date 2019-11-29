@@ -66,6 +66,6 @@ suite =
                 \_ ->
                     Network.create [(1, 0)] [(1, 1, -0.5)]
                         |> Network.toDot
-                        |> Expect.equal """digraph {\n1 [label="1=0"]\n1 -- 1 [label="-0.5"]\n}"""
+                        |> Expect.equal """digraph {\n1 [label="1=0"]\n1 -> 1 [label="-0.5"]\n}"""
             ]
         ]

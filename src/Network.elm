@@ -123,7 +123,7 @@ toDot network =
         connectionsAsDot = connections |> List.map connection2dot |> String.join "\n"
         connection2dot (from, to, weight) = 
             (from |> String.fromInt)
-            ++ " -- " ++
+            ++ " -> " ++
             (to |> String.fromInt)
             ++ " [label=\"" ++ (weight |> String.fromFloat) ++ "\"]"
     in
