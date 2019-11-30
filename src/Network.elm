@@ -1,10 +1,10 @@
-module Network exposing (Network, create, activate, setValues, toString, toDot)
+module Network exposing (Network, create, activate, setValues, toString, toDot, fitness, get)
 
 {-| Basic module for creating and using Artificial Neural Networks (ANNs).
 
 @docs Network
 
-@docs create, setValues, activate, toString, toDot
+@docs create, setValues, activate, toString, toDot, fitness, get
 -}
 
 import Dict
@@ -132,3 +132,64 @@ toDot network =
     ++ "\n" ++
     connectionsAsDot 
     ++"\n}"
+
+{-| fitness function defined as
+1 - RMSE = 1 - Root of Mean Squared Error, this calcuation is done per sample and then summed for all samples,
+which should mean the result gives how many correct answer the network gave (kind of).
+see https://www.researchgate.net/figure/The-root-mean-squared-error-RMSE-when-the-genetic-algorithm-is-implemented-with-fitness_fig1_319382166
+
+    Network.create [(1, 0), (2, 0)] [(1, 2, 1.0)]
+                        |> Network.fitness 
+                            [ ([(1, 0)], [(2, 0)])
+                            , ([(1, 1)], [(2, 1)])
+                            ]
+    -- == 2.0  (Meaning both samples correctly answered)
+
+-}
+fitness : List (List (Int, Float), List (Int, Float)) -> Network -> Float
+fitness data network =
+    let
+        evaluateOne : List (Int, Float) -> List Int -> List (Int, Float)
+        evaluateOne input outputIds =
+            let
+                actual = network 
+                    |> setValues input 
+                    |> activate
+                    |> activate
+                    |> activate
+                    |> get outputIds
+            in
+            actual
+        error expected actual =
+            let
+                sumOfErrorSquared = 
+                    List.map2 (\ex ac -> (ex-ac) ^ 2) expected actual
+                    |> List.sum 
+                len =  List.length expected |> toFloat
+                avg = sumOfErrorSquared / len
+            in
+            1 - sqrt avg
+        idsOnly : (List (Int, Float)) -> List Int
+        idsOnly nodes = nodes |> List.map (\(id, _) -> id)
+        valuesOnly nodes = nodes |> List.map (\(_, value) -> value)
+        errorPerSample : (List (Int, Float), List (Int, Float)) -> Float 
+        errorPerSample (input, expected) =
+            let
+                actual = evaluateOne input (expected |> idsOnly)
+                err = error (expected |> valuesOnly) (actual |> valuesOnly)
+            in
+            err
+    in
+    List.map errorPerSample data |> List.sum
+
+{-| get specific nodes with their current values
+-}
+get : List Int -> Network -> List (Int, Float)
+get nodeIds network =
+    let
+        (Network nodes _) = network
+    in
+    Dict.intersect 
+        (nodes |> Dict.fromList) 
+        (nodeIds |> List.map (\id -> (id, 0)) |> Dict.fromList)
+        |> Dict.toList

@@ -1,6 +1,6 @@
 module Example exposing (suite)
 
-import Expect
+import Expect exposing (FloatingPointTolerance(..))
 import Test exposing (Test, describe, test)
 
 import Network
@@ -67,5 +67,23 @@ suite =
                     Network.create [(1, 0)] [(1, 1, -0.5)]
                         |> Network.toDot
                         |> Expect.equal """digraph {\n1 [label="1=0"]\n1 -> 1 [label="-0.5"]\n}"""
+            ]
+        , describe "Network.fitness"
+            [ test "identity as expected one input" <|
+                \_ ->
+                    Network.create [(1, 0), (2, 0)] [(1, 2, 1.0)]
+                        |> Network.fitness 
+                            [ ([(1, 0)], [(2, 0)])
+                            , ([(1, 1)], [(2, 1)])
+                            ]
+                        |> Expect.within (Absolute 0.001) 2 
+            , test "flawed identity, one input" <|
+                \_ ->
+                    Network.create [(1, 0), (2, 0)] [(1, 2, 1.0)]
+                        |> Network.fitness 
+                            [ ([(1, 0)], [(2, 1)])
+                            , ([(1, 1)], [(2, 1)])
+                            ]
+                        |> Expect.within (Absolute 0.001) 1 
             ]
         ]
