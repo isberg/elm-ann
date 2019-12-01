@@ -1,4 +1,4 @@
-module Genome exposing (Genome, create, addConnection, toString, toNetwork)
+module Genome exposing (Genome, create, addConnection, addNode, toString, toNetwork)
 {-| Module for doing operations on Artificial Neural Network Genomes.
 -}
 
@@ -18,6 +18,8 @@ create inputs outputs =
         [] 
         []
 
+{-| Add connection between existing nodes
+-}
 addConnection : Int -> Int -> Float -> Genome -> Genome
 addConnection from to weight genome =
     let
@@ -29,12 +31,35 @@ addConnection from to weight genome =
         hidden 
         (connections ++ [(from, to, weight)])
 
+{-| Add node by replacing existing connection with a node and two connections.
+-}
+addNode : Int -> Int -> Genome -> Genome
+addNode from to genome =
+    let
+        (Genome inputs outputs hidden connections) = genome
+        replaced = connections 
+            |> List.filter (\(f, t, _)-> f == from && t == to)
+        newNode = (inputs ++ outputs ++ hidden) 
+            |> List.maximum 
+            |> Maybe.withDefault -1
+            |> (+) 1
+    in
+    case replaced of
+        (_, _, weight) :: [] ->
+            Genome inputs outputs (hidden ++ [newNode]) (connections |> List.filter (\(f, t, _) -> f /= from || t /= to ))
+                |> addConnection from newNode 1
+                |> addConnection newNode to weight
+            
+        _ -> genome
+
+
+
 {-| convert to string representation
 -}
 toString : Genome -> String
 toString genome =
     let
-        (Genome inputs outputs _ connections) = genome
+        (Genome inputs outputs hidden connections) = genome
         nodes2string nodes =
             "[" ++ 
             (nodes |> List.map String.fromInt |> String.join ", ")
@@ -55,14 +80,18 @@ toString genome =
     (inputs |> nodes2string)
     ++ " " ++
     (outputs |> nodes2string)
-    ++ " [] " ++
+    ++ " " ++ 
+    (hidden |> nodes2string)
+    ++ " " ++
     (connections |> connections2string)
 
+{-| create network from genome
+-}
 toNetwork : Genome -> Network
 toNetwork genome =
     let 
         (Genome inputs outputs hidden connections) = genome
-        nodes = inputs ++ outputs 
+        nodes = inputs ++ outputs ++ hidden
             |> List.map (\id -> (id, if id == 0 then 1 else 0))
     in
     Network.create 
