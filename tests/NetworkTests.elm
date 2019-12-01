@@ -1,4 +1,4 @@
-module Example exposing (suite)
+module NetworkTests exposing (suite)
 
 import Expect exposing (FloatingPointTolerance(..))
 import Test exposing (Test, describe, test)
