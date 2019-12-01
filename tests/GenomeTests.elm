@@ -22,6 +22,14 @@ suite =
                         |> Genome.toString
                         |> Expect.equal "Genome [0] [1, 2] [] []"
             ]
+        , describe "addConnection"
+            [ test "to minimal genome" <|
+                \_ ->
+                    Genome.create 0 1
+                        |> Genome.addConnection 0 1 0.5
+                        |> Genome.toString
+                        |> Expect.equal "Genome [0] [1] [] [(0, 1)=0.5]"
+            ]
         , describe "Genome.toNetwork"
             [ test "minimal genome creates minimal network" <|
                 \_ ->
@@ -34,5 +42,15 @@ suite =
                     in
                     actual           
                         |> Expect.equal expected
+            , test "genome with one connection" <|
+                \_ ->
+                    let
+                        expected = Network.create [(0, 1), (1, 0)] [(0, 1, -0.5)]
+                            |> Network.toString
+                        actual = Genome.create 0 1 |> Genome.addConnection 0 1 -0.5
+                            |> Genome.toNetwork
+                            |> Network.toString
+                    in
+                    actual |> Expect.equal expected
             ]
         ]
