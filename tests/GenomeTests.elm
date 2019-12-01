@@ -4,6 +4,7 @@ import Expect exposing (FloatingPointTolerance(..))
 import Test exposing (Test, describe, test)
 
 import Genome
+import Network
 
 
 suite : Test
@@ -20,5 +21,18 @@ suite =
                     Genome.create 0 2
                         |> Genome.toString
                         |> Expect.equal "Genome [0] [1, 2] [] []"
+            ]
+        , describe "Genome.toNetwork"
+            [ test "minimal genome creates minimal network" <|
+                \_ ->
+                    let
+                        expected = Network.create [(0, 1)] [] 
+                            |> Network.toString
+                        actual = Genome.create 0 0
+                            |> Genome.toNetwork
+                            |> Network.toString
+                    in
+                    actual           
+                        |> Expect.equal expected
             ]
         ]

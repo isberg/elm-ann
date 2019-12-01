@@ -1,8 +1,8 @@
-module Genome exposing (Genome, create, toString)
-
+module Genome exposing (Genome, create, toString, toNetwork)
 {-| Module for doing operations on Artificial Neural Network Genomes.
-
 -}
+
+import Network exposing (Network)
 
 {-| Genome represents an ANN genotype
 -}
@@ -34,3 +34,14 @@ toString genome =
     ++ " " ++
     (outputs |> nodes2string)
     ++ " [] []"
+
+toNetwork : Genome -> Network
+toNetwork genome =
+    let 
+        (Genome inputs outputs hidden connections) = genome
+        nodes = inputs ++ outputs 
+            |> List.map (\id -> (id, if id == 0 then 1 else 0))
+    in
+    Network.create 
+        nodes 
+        connections    
