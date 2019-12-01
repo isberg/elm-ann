@@ -1,5 +1,9 @@
 module Genome exposing (Genome, create, addConnection, addNode, toString, toNetwork)
 {-| Module for doing operations on Artificial Neural Network Genomes.
+
+@docs Genome
+
+@docs create, addConnection, addNode, toString, toNetwork
 -}
 
 import Network exposing (Network)
