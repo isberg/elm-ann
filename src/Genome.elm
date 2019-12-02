@@ -1,16 +1,26 @@
-module Genome exposing (Genome, create, addConnection, addNode, toString, toNetwork)
+module Genome exposing (Genome, create, addConnection, addNode, toString, toNetwork, mutate, Connection)
 {-| Module for doing operations on Artificial Neural Network Genomes.
 
 @docs Genome
 
 @docs create, addConnection, addNode, toString, toNetwork
+
+@docs mutate, Connection
 -}
 
+import Random exposing (Generator)
 import Network exposing (Network)
 
 {-| Genome represents an ANN genotype
 -}
 type Genome = Genome (List Int) (List Int) (List Int) (List (Int, Int, Float))
+
+{-| Representing a connection, or rather a new mutated connection, so really a mutation... -}
+type alias Connection = 
+    { from : Int
+    , to : Int
+    , weight : Float
+    }
 
 {-| Create Genome with specified number of inputs, outputs, a bias node and no hidden nodes or connections
 -}
@@ -101,3 +111,20 @@ toNetwork genome =
     Network.create 
         nodes 
         connections  
+
+{-| mutate create a mutation generator
+-}
+mutate : Genome -> Maybe (Generator Connection)
+mutate genome =
+    let
+        (Genome inputs outputs hidden connections) = genome
+    in
+    case (inputs ++ hidden, outputs ++ hidden) of
+        (fr::om, t::o) ->
+            Random.map3
+                Connection
+                (Random.uniform fr om)
+                (Random.uniform t o)
+                (Random.float -2 2)
+            |> Just
+        _ -> Nothing
