@@ -75,28 +75,51 @@ suite =
                     actual |> Expect.equal expected
             ]
         , describe "Genome.mutate"
-            [ test "minimal" <|
+            [ test "minimal add connection" <|
                 \_ ->
                     let
                         genome = Genome.create 0 1
-                        expected = Genome.Connection 0 1 0.37920816298657556  
-                        {-
-                            Random.map3
-                                Genome.Connection
-                                (Random.int 0 0) 
-                                (Random.int 1 1) 
-                                (Random.float -2 2) 
-                        -}
+                        expected = Genome.AddConnection 0 1 0.37920816298657556  
                         mutate = genome |> Genome.mutate
                         seed = Random.initialSeed 0
-                        (actual, _) =
-                            case mutate of 
-                                Just generator ->
-                                    Random.step generator seed 
-                                Nothing -> 
-                                    (Genome.Connection -6 -6 -6, seed)
                     in
-                    actual |> Expect.equal expected
-
+                    case mutate of 
+                        generator ->
+                            let
+                                (actual, _) = Random.step generator seed
+                            in
+                            actual |> Expect.equal expected 
+            , test "minimal, one connection adds Node" <|
+                \_ ->
+                    let
+                        genome = 
+                            Genome.create 0 1
+                            |> Genome.addConnection 0 1 -0.5
+                        expected = Genome.AddNode 0 1
+                        mutate = genome |> Genome.mutate
+                        seed = Random.initialSeed 0
+                    in
+                    case mutate of 
+                        generator ->
+                            let
+                                (actual, _) = Random.step generator seed
+                            in
+                            actual |> Expect.equal expected 
+            , test "minimal, one connection updates weight" <|
+                \_ ->
+                    let
+                        genome = 
+                            Genome.create 0 1
+                            |> Genome.addConnection 0 1 -0.5
+                        expected = Genome.ModifyWeight 0 1 0.16613396827782934
+                        mutate = genome |> Genome.mutate
+                        seed = Random.initialSeed 1
+                    in
+                    case mutate of 
+                        generator ->
+                            let
+                                (actual, _) = Random.step generator seed
+                            in
+                            actual |> Expect.equal expected 
             ]
         ]

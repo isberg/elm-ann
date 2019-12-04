@@ -1,11 +1,11 @@
-module Genome exposing (Genome, create, addConnection, addNode, toString, toNetwork, mutate, Connection)
+module Genome exposing (Genome, create, addConnection, addNode, toString, toNetwork, mutate, Mutation(..))
 {-| Module for doing operations on Artificial Neural Network Genomes.
 
 @docs Genome
 
 @docs create, addConnection, addNode, toString, toNetwork
 
-@docs mutate, Connection
+@docs mutate, Mutation
 -}
 
 import Random exposing (Generator)
@@ -15,12 +15,12 @@ import Network exposing (Network)
 -}
 type Genome = Genome (List Int) (List Int) (List Int) (List (Int, Int, Float))
 
-{-| Representing a connection, or rather a new mutated connection, so really a mutation... -}
-type alias Connection = 
-    { from : Int
-    , to : Int
-    , weight : Float
-    }
+{-| Representing a new mutation -}
+type Mutation 
+    = NoMutation 
+    | AddConnection Int Int Float
+    | AddNode Int Int
+    | ModifyWeight Int Int Float
 
 {-| Create Genome with specified number of inputs, outputs, a bias node and no hidden nodes or connections
 -}
@@ -114,17 +114,49 @@ toNetwork genome =
 
 {-| mutate create a mutation generator
 -}
-mutate : Genome -> Maybe (Generator Connection)
+mutate : Genome -> Generator Mutation
 mutate genome =
     let
         (Genome inputs outputs hidden connections) = genome
+        addConnectionGenerator =
+            case (inputs ++ hidden, outputs ++ hidden) of
+                (fr::om, t::o) ->
+                    Random.map3
+                        AddConnection
+                        (Random.uniform fr om)
+                        (Random.uniform t o)
+                        (Random.float -2 2)
+                    |> Just
+                _ -> Nothing
+        addNodeGenerator =
+            case connections of
+                con::ections
+                    ->  Random.map 
+                            (\(f, t, _) -> AddNode f t) 
+                            (Random.uniform con ections)
+                        |> Just
+                _ -> Nothing
+        modifyWeightGenerator = 
+            case connections of
+                con::ections
+                    ->  Random.map2 
+                            (\(f, t, _) w -> ModifyWeight f t w) 
+                            (Random.uniform con ections)
+                            (Random.float -0.2 0.2)
+                        |> Just
+                _ -> Nothing
+
     in
-    case (inputs ++ hidden, outputs ++ hidden) of
-        (fr::om, t::o) ->
-            Random.map3
-                Connection
-                (Random.uniform fr om)
-                (Random.uniform t o)
-                (Random.float -2 2)
-            |> Just
-        _ -> Nothing
+    if connections == [] then
+        addConnectionGenerator |> Maybe.withDefault (Random.constant NoMutation)
+    else
+        Random.float 0 1
+        |> Random.andThen 
+            (\v -> 
+                if v < 0.2 then 
+                    addNodeGenerator|> Maybe.withDefault (Random.constant NoMutation)
+                else if v < 0.8 then
+                    modifyWeightGenerator|> Maybe.withDefault (Random.constant NoMutation)
+                else
+                    addConnectionGenerator |> Maybe.withDefault (Random.constant NoMutation)
+            )
