@@ -47,6 +47,8 @@ activate network =
     let
         (Network nodes connections) = network
         step z = if z > 0 then 1 else 0
+        sigmoid z = 1 / (1 + e^ -z)
+        activationFunction = sigmoid
         activateNode (id, value) = 
             let 
                 getOutput nodeId = nodes 
@@ -62,7 +64,7 @@ activate network =
                 newValue =
                     case inputs of
                        [] -> value
-                       _ -> insignal |> step
+                       _ -> insignal |> activationFunction
             in
             (id, newValue)
     in

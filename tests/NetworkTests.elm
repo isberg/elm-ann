@@ -38,7 +38,7 @@ suite =
                     Network.create [(0, 1), (1, 0)] [(0, 1, 0.5)]
                         |> Network.activate
                         |> Network.toString
-                        |> Expect.equal "Network [0=1, 1=1] [(0, 1)=0.5]"
+                        |> Expect.equal "Network [0=1, 1=0.6224593312018546] [(0, 1)=0.5]"
             ]
         , describe "Network.setValues"
             [ test "sets all matching node value" <|
@@ -76,7 +76,7 @@ suite =
                             [ ([(1, 0)], [(2, 0)])
                             , ([(1, 1)], [(2, 1)])
                             ]
-                        |> Expect.within (Absolute 0.001) 2 
+                        |> Expect.within (Absolute 0.01) 1.23 
             , test "flawed identity, one input" <|
                 \_ ->
                     Network.create [(1, 0), (2, 0)] [(1, 2, 1.0)]
@@ -84,6 +84,6 @@ suite =
                             [ ([(1, 0)], [(2, 1)])
                             , ([(1, 1)], [(2, 1)])
                             ]
-                        |> Expect.within (Absolute 0.001) 1 
+                        |> Expect.within (Absolute 0.01) 1.23
             ]
         ]
