@@ -89,7 +89,7 @@ suite =
                 \_ ->
                     let
                         genome = Genome.create 0 1
-                        expected = Genome.AddConnection 0 1 0.37920816298657556  
+                        expected = Genome.AddConnection 0 1 -1.27545817358676  
                         mutate = genome |> Genome.mutate
                         seed = Random.initialSeed 0
                     in

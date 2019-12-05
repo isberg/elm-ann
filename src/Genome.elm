@@ -10,6 +10,8 @@ module Genome exposing (Genome, create, addConnection, addNode, modifyWeight, to
 
 import Random exposing (Generator)
 import Network exposing (Network)
+import Set
+import List.Extra
 
 {-| Genome represents an ANN genotype
 -}
@@ -137,7 +139,31 @@ mutate genome =
     let
         (Genome inputs outputs hidden connections) = genome
         addConnectionGenerator =
-            case (inputs ++ hidden, outputs ++ hidden) of
+            let
+                all = 
+                    List.Extra.lift2 
+                        (\from to -> (from, to))
+                        (inputs ++ hidden) 
+                        (outputs ++ hidden)
+                    |> Set.fromList
+                existing = 
+                    connections
+                    |> List.map (\(f, t, _) -> (f, t))
+                    |> Set.fromList
+                candidates = 
+                    Set.diff all existing
+                    |> Set.toList 
+                    |> List.map (\(from, to) -> AddConnection from to)
+            in
+            case candidates of
+                (can::didates) ->
+                    Random.map2
+                    (\con weight -> con weight)
+                    (Random.uniform can didates) 
+                    (Random.float -2 2)
+                    |> Just
+                _ -> Nothing
+{-            case (inputs ++ hidden, outputs ++ hidden) of
                 (fr::om, t::o) ->
                     Random.map3
                         AddConnection
@@ -146,6 +172,7 @@ mutate genome =
                         (Random.float -2 2)
                     |> Just
                 _ -> Nothing
+-}
         addNodeGenerator =
             case connections of
                 con::ections

@@ -3,7 +3,7 @@
     "name": "isberg/elm-ann",
     "summary": "Artifical Neural Network in Elm",
     "license": "MIT",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "exposed-modules": [
         "Network",
         "Genome"
@@ -11,7 +11,8 @@
     "elm-version": "0.19.0 <= v < 0.20.0",
     "dependencies": {
         "elm/core": "1.0.0 <= v < 2.0.0",
-        "elm/random": "1.0.0 <= v < 2.0.0"
+        "elm/random": "1.0.0 <= v < 2.0.0",
+        "elm-community/list-extra": "8.2.2 <= v < 9.0.0"
     },
     "test-dependencies": {
         "elm-explorations/test": "1.2.2 <= v < 2.0.0"
