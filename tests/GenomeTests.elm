@@ -107,7 +107,7 @@ suite =
                             |> Genome.addConnection 0 1 -0.5
                         expected = Genome.AddNode 0 1
                         mutate = genome |> Genome.mutate
-                        seed = Random.initialSeed 0
+                        seed = Random.initialSeed 15
                     in
                     case mutate of 
                         generator ->

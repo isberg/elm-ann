@@ -163,16 +163,6 @@ mutate genome =
                     (Random.float -2 2)
                     |> Just
                 _ -> Nothing
-{-            case (inputs ++ hidden, outputs ++ hidden) of
-                (fr::om, t::o) ->
-                    Random.map3
-                        AddConnection
-                        (Random.uniform fr om)
-                        (Random.uniform t o)
-                        (Random.float -2 2)
-                    |> Just
-                _ -> Nothing
--}
         addNodeGenerator =
             case connections of
                 con::ections
@@ -198,9 +188,9 @@ mutate genome =
         Random.float 0 1
         |> Random.andThen 
             (\v -> 
-                if v < 0.2 then 
+                if v < 0.05 then 
                     addNodeGenerator|> Maybe.withDefault (Random.constant NoMutation)
-                else if v < 0.8 then
+                else if v < 0.9 then
                     modifyWeightGenerator|> Maybe.withDefault (Random.constant NoMutation)
                 else
                     addConnectionGenerator |> Maybe.withDefault (Random.constant NoMutation)
