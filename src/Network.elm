@@ -159,6 +159,10 @@ fitness data network =
                     |> activate
                     |> activate
                     |> activate
+                    |> activate
+                    |> activate
+                    |> activate
+                    |> activate
                     |> get outputIds
             in
             actual
