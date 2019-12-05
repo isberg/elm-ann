@@ -1,17 +1,19 @@
-module Genome exposing (Genome, create, addConnection, addNode, modifyWeight, toString, toNetwork, mutate, Mutation(..))
+module Genome exposing (Genome, create, addConnection, addNode, modifyWeight, toString, toNetwork, mutate, breed, Mutation(..))
 {-| Module for doing operations on Artificial Neural Network Genomes.
 
 @docs Genome
 
 @docs create, addConnection, addNode, modifyWeight, toString, toNetwork
 
-@docs mutate, Mutation
+@docs mutate, Mutation, breed
 -}
 
 import Random exposing (Generator)
 import Network exposing (Network)
 import Set
+import Dict
 import List.Extra
+import Random.Extra
 
 {-| Genome represents an ANN genotype
 -}
@@ -195,3 +197,22 @@ mutate genome =
                 else
                     addConnectionGenerator |> Maybe.withDefault (Random.constant NoMutation)
             )
+
+{-| breeds 2 genomes creating one offspring
+-}
+breed : Genome -> Genome -> Generator Genome
+breed alpha beta =
+    let
+        (Genome inputs outputs hidden alpha_connections) = alpha
+        (Genome _ _ _ beta_connections) = beta
+        toDict l = l |> List.map (\(f, t, w) -> ((t, f), w)) |> Dict.fromList
+        alphaDict = toDict alpha_connections
+        betaDict = toDict beta_connections
+        aligned_alpha_connections = Dict.diff alphaDict betaDict |> Dict.toList |> List.map (\((f, t), w) -> (f, t, w))
+        aligned_beta_connections = Dict.diff betaDict alphaDict |> Dict.toList |> List.map (\((f, t), w) -> (f, t, w))
+
+        connections = 
+            List.map2 Random.Extra.choice aligned_alpha_connections aligned_beta_connections 
+            |> Random.Extra.combine
+    in
+    Random.map (Genome inputs outputs hidden) connections
