@@ -188,7 +188,7 @@ mutate genome =
         Random.float 0 1
         |> Random.andThen 
             (\v -> 
-                if v < 0.05 then 
+                if v < 0.025 then 
                     addNodeGenerator|> Maybe.withDefault (Random.constant NoMutation)
                 else if v < 0.9 then
                     modifyWeightGenerator|> Maybe.withDefault (Random.constant NoMutation)
