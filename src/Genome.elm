@@ -208,9 +208,17 @@ breed alpha beta =
         toDict l = l |> List.map (\(f, t, w) -> ((f, t), w)) |> Dict.fromList
         alphaDict = toDict alpha_connections
         betaDict = toDict beta_connections
-        aligned_alpha_connections = Dict.diff alphaDict betaDict |> Dict.toList |> List.map (\((f, t), w) -> (f, t, w))
-        aligned_beta_connections = Dict.diff betaDict alphaDict |> Dict.toList |> List.map (\((f, t), w) -> (f, t, w))
-
+        extra = Dict.diff alphaDict betaDict |> Dict.toList
+        aligned_alpha_connections = 
+            Dict.union alphaDict betaDict 
+            |> Dict.toList 
+            |> List.append extra
+            |> List.map (\((f, t), w) -> (f, t, w))
+        aligned_beta_connections = 
+            Dict.union betaDict alphaDict 
+            |> Dict.toList 
+            |> List.append extra
+            |> List.map (\((f, t), w) -> (f, t, w))
         connections = 
             List.map2 Random.Extra.choice aligned_alpha_connections aligned_beta_connections 
             |> Random.Extra.combine
