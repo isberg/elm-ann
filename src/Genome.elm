@@ -205,7 +205,7 @@ breed alpha beta =
     let
         (Genome inputs outputs hidden alpha_connections) = alpha
         (Genome _ _ _ beta_connections) = beta
-        toDict l = l |> List.map (\(f, t, w) -> ((t, f), w)) |> Dict.fromList
+        toDict l = l |> List.map (\(f, t, w) -> ((f, t), w)) |> Dict.fromList
         alphaDict = toDict alpha_connections
         betaDict = toDict beta_connections
         aligned_alpha_connections = Dict.diff alphaDict betaDict |> Dict.toList |> List.map (\((f, t), w) -> (f, t, w))
