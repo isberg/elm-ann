@@ -1,9 +1,9 @@
-module Genome exposing (Genome, create, addConnection, addNode, toString, toNetwork, mutate, Mutation(..))
+module Genome exposing (Genome, create, addConnection, addNode, modifyWeight, toString, toNetwork, mutate, Mutation(..))
 {-| Module for doing operations on Artificial Neural Network Genomes.
 
 @docs Genome
 
-@docs create, addConnection, addNode, toString, toNetwork
+@docs create, addConnection, addNode, modifyWeight, toString, toNetwork
 
 @docs mutate, Mutation
 -}
@@ -67,6 +67,24 @@ addNode from to genome =
         _ -> genome
 
 
+{-| modifyWeight adds the given modification to a specific connection
+-}
+modifyWeight : Int -> Int -> Float -> Genome -> Genome
+modifyWeight from to modification genome =
+    let
+        (Genome inputs outputs hidden connections) = genome
+        modifiedConnections = 
+            connections |> List.map modifyConnection
+        modifyConnection connection = 
+            let
+                (f, t, w) = connection
+            in
+            if (f, t) == (from, to) then 
+                (f, t, w + modification)
+            else
+                connection
+    in
+    Genome inputs outputs hidden modifiedConnections
 
 {-| convert to string representation
 -}

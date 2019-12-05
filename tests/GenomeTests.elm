@@ -40,6 +40,16 @@ suite =
                         |> Genome.toString
                         |> Expect.equal "Genome [0] [1] [2] [(0, 2)=1, (2, 1)=-1]"
             ]
+        , describe "modifyWeight"
+            [ test "updates weight" <|
+                \_ ->
+                    Genome.create 0 1
+                    |> Genome.addConnection 0 1 -0.1
+                    |> Genome.modifyWeight 0 1 0.2
+                    |> Genome.toString
+                    |> Expect.equal "Genome [0] [1] [] [(0, 1)=0.1]"
+                    
+            ]
         , describe "Genome.toNetwork"
             [ test "minimal genome creates minimal network" <|
                 \_ ->
